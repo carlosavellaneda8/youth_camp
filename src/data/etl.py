@@ -94,7 +94,7 @@ class DataMapper:
 
     def map(self) -> None:
         """
-        Map the data with the normalized string
+        Map the data's columns with normalized strings
         """
         assert self.mapped is False
         self.data = self.data.rename(columns=self.columns_map)
@@ -102,7 +102,7 @@ class DataMapper:
 
     def unmap(self) -> None:
         """
-        Unmap the data to the original columns
+        Unmap the data's columns to the original column names
         """
         assert self.mapped is True
         self.data = self.data.rename(columns=self.reversed_map)
