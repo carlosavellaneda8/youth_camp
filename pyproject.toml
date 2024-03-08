@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "youth-camp"
+version = "0.1.0"
+description = ""
+authors = ["Carlos Avellaneda <carlos.avellaneda8+1@gmail.com>"]
+readme = "README.md"
+packages = [
+    {include="app", from="src/"},
+    {include="data", from="src/"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.32.0"
+pyairtable = "^2.3.0.post1"
+unidecode = "^1.3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
