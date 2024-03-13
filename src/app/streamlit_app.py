@@ -2,13 +2,21 @@ import streamlit as st
 from utils import check_password
 from app.views import (
     attendants,
+    weekly_summary,
+    registries,
     payments,
     pendings,
 )
 
 
-def registries():
-    st.markdown("## Consignaciones")
+def home():
+    md_text = """## Inicio
+
+Bienvenido al dashboard de seguimiento de nuestro retiro internacional de jóvenes.
+
+Selecciona en el menú de la izquierda la opción que desees.
+    """
+    st.markdown(md_text)
 
 
 st.set_page_config(
@@ -18,8 +26,10 @@ st.set_page_config(
 )
 
 page_names_to_funcs = {
-    "Consignaciones": registries,
+    "Inicio": home,
     "Inscritos": attendants,
+    "Reporte semanal": weekly_summary,
+    "Consignaciones": registries,
     "Desembolsos": payments,
     "Pendientes": pendings,
 }
