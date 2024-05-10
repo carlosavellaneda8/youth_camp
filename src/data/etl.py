@@ -86,8 +86,11 @@ class AirtableDataExtractor:
 
 class DataMapper:
 
-    def __init__(self, records: list[dict]) -> None:
-        self.data = _records_to_dataframe(records=records)
+    def __init__(self, data: list[dict] | pd.DataFrame) -> None:
+        if isinstance(data, list):
+            self.data = _records_to_dataframe(records=data)
+        else:
+            self.data = data
         self.columns_map = _normalize_columns_map(data=self.data)
         self.reversed_map = _reverse_columns_map(columns_map=self.columns_map)
         self.mapped = False

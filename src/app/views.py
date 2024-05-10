@@ -1,16 +1,22 @@
 import streamlit as st
 import pandas as pd
 from data.etl import DataMapper
-from data.transform_data import create_person_summary
+from data.transform_data import create_person_summary, filter_data
 
 
 def attendants(data: DataMapper):
     st.markdown("## Inscritos")
 
-    if data.mapped is False:
-        data.map()
+    ministries = ["Todos"] + data.data["Ministerio/Obra"].drop_duplicates().tolist()
+    churches = ["Todos"] + data.data["Detalle Obra (Nuevo)"].drop_duplicates().tolist()
 
-    summary_data = create_person_summary(data=data)
+    with st.sidebar:
+        main_filter = st.selectbox("Filtrar por:", ministries)
+
+    dataset = filter_data(data=data, column_name="Ministerio/Obra", value=main_filter)
+
+    dataset.map()
+    summary_data = create_person_summary(data=dataset)
     st.write(summary_data)
 
     st.markdown(f"""

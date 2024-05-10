@@ -29,3 +29,18 @@ def create_person_summary(data: DataMapper) -> pd.DataFrame:
     )
     rename_columns = {key: value for key, value in data.reversed_map.items() if key in person_summary.columns}
     return person_summary.rename(columns=rename_columns)
+
+
+def filter_data(data: DataMapper, column_name: str, value: str | int | float) -> DataMapper:
+    """
+    Filter data based on column name and value. If the value is "Todos", then no filter is applied
+    """
+    if value == "Todos":
+        return data
+
+    dataset = data.data.copy()
+    mask = dataset[column_name] == value
+    ids_to_filter = dataset[mask]["Número de Documento"].drop_duplicates()
+    filtered_data = dataset[dataset["Número de Documento"].isin(ids_to_filter)]
+    filtered_data = DataMapper(data=filtered_data)
+    return filtered_data
