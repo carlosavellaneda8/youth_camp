@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from app.utils import create_ministries_filter
 from data.etl import DataMapper
 from data.transform_data import create_person_summary, filter_data
 
@@ -17,15 +18,7 @@ Selecciona en el menú de la izquierda la opción que desees.
 def attendants(data: DataMapper):
     st.markdown("## Inscritos")
 
-    ministries = ["Todos"] + data.data["Ministerio/Obra"].drop_duplicates().tolist()
-    churches = ["Todos"] + data.data["Detalle Obra (Nuevo)"].drop_duplicates().tolist()
-
-    with st.sidebar:
-        main_filter = st.selectbox("Filtrar por:", ministries)
-
-    dataset = filter_data(data=data, column_name="Ministerio/Obra", value=main_filter)
-
-    dataset.map()
+    dataset = create_ministries_filter(data=data)
     summary_data = create_person_summary(data=dataset)
     st.write(summary_data)
 
@@ -41,8 +34,9 @@ def attendants(data: DataMapper):
 def weekly_summary(data: DataMapper):
     st.markdown("## Reporte semanal")
 
-    registries_data = data.data
-    registries_data["Created"] = pd.to_datetime(registries_data["Created"])
+    dataset = create_ministries_filter(data=data)
+    dataset.unmap()
+    registries_data = dataset.data
     registries_data["week"] = registries_data["Created"] - pd.to_timedelta(
         registries_data["Created"].dt.dayofweek, unit="d"
     )
@@ -55,10 +49,14 @@ def weekly_summary(data: DataMapper):
 def registries(data: DataMapper):
     st.markdown("## Registros de todas las consignaciones")
 
-    registries_data = data.data
-    st.write(registries_data.drop(
-        columns=["Comprobante de pago", "Last Modified By", "Last Modified"]
-    ))
+    dataset = create_ministries_filter(data=data)
+    dataset.unmap()
+    registries_data = dataset.data
+    st.write(
+        registries_data.drop(
+            columns=["Comprobante de pago", "Last Modified By", "Last Modified"]
+        ).reset_index(drop=True)
+    )
 
 
 def payments(data: DataMapper):
