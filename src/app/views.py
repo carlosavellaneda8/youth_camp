@@ -4,6 +4,16 @@ from data.etl import DataMapper
 from data.transform_data import create_person_summary, filter_data
 
 
+def home():
+    md_text = """## Inicio
+
+Bienvenido al dashboard de seguimiento de nuestro retiro internacional de jóvenes.
+
+Selecciona en el menú de la izquierda la opción que desees.
+    """
+    st.markdown(md_text)
+
+
 def attendants(data: DataMapper):
     st.markdown("## Inscritos")
 
@@ -49,6 +59,7 @@ def registries(data: DataMapper):
     st.write(registries_data.drop(
         columns=["Comprobante de pago", "Last Modified By", "Last Modified"]
     ))
+
 
 def payments(data: DataMapper):
     st.markdown("## Desembolsos")
