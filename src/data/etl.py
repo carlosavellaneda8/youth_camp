@@ -20,6 +20,8 @@ def _records_to_dataframe(records: list[dict]) -> pd.DataFrame:
     """
     fields_data = [record["fields"] for record in records]
     data = pd.DataFrame(fields_data)
+    data["Created"] = pd.to_datetime(data["Created"])
+    data["Created"] = data["Created"].dt.tz_convert("America/Bogota")
     return data
 
 
