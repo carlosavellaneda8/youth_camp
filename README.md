@@ -13,7 +13,8 @@ pip install poetry
 After that, a new virtual environment will be created containing the dependencies to run this app. Once this is done, do this:
 
 ```sh
-poetry run src/app/app.py
+poetry shell
+streamlit run src/app/app.py
 ```
 
 And that's it! A new browser session will be opened with the app running.
