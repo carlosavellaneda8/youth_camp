@@ -29,7 +29,7 @@ def check_password():
     return True
 
 
-def create_ministries_filter(data: DataMapper) -> DataMapper:
+def create_ministries_filter(data: DataMapper) -> tuple[DataMapper, str]:
     """Filter the data by ministries"""
     ministries = ["Todos"] + data.data["Ministerio/Obra"].drop_duplicates().tolist()
 
@@ -37,5 +37,19 @@ def create_ministries_filter(data: DataMapper) -> DataMapper:
         main_filter = st.selectbox("Filtrar por:", ministries)
 
     data_subset = filter_data(data=data, column_name="Ministerio/Obra", value=main_filter)
+    data_subset.map()
+    return data_subset, main_filter
+
+
+def create_churches_filter(data: DataMapper) -> DataMapper:
+    """Filter the data by churches"""
+    data.unmap()
+    churches = data.data["Detalle Obra"].drop_duplicates().dropna().tolist()
+    churches.sort()
+    churches = ["Todos"] + churches
+    with st.sidebar:
+        secondary_filter = st.selectbox("Selecciona la obra/iglesia hija:", churches)
+
+    data_subset = filter_data(data=data, column_name="Detalle Obra", value=secondary_filter)
     data_subset.map()
     return data_subset

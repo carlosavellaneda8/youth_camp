@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from app.utils import create_ministries_filter
+from app.utils import create_ministries_filter, create_churches_filter
 from data.etl import DataMapper
 from data.transform_data import create_person_summary, filter_data
 
@@ -18,7 +18,9 @@ Selecciona en el menú de la izquierda la opción que desees.
 def attendants(data: DataMapper):
     st.markdown("## Inscritos")
 
-    dataset = create_ministries_filter(data=data)
+    dataset, main_filter = create_ministries_filter(data=data)
+    if main_filter == "Obra/Iglesia Hija":
+        dataset = create_churches_filter(data=dataset)
     summary_data = create_person_summary(data=dataset)
     st.write(summary_data)
 
@@ -34,7 +36,9 @@ def attendants(data: DataMapper):
 def weekly_summary(data: DataMapper):
     st.markdown("## Reporte semanal")
 
-    dataset = create_ministries_filter(data=data)
+    dataset, main_filter = create_ministries_filter(data=data)
+    if main_filter == "Obra/Iglesia Hija":
+        dataset = create_churches_filter(data=dataset)
     dataset.unmap()
     registries_data = dataset.data
     registries_data["week"] = registries_data["Created"] - pd.to_timedelta(
@@ -49,7 +53,9 @@ def weekly_summary(data: DataMapper):
 def registries(data: DataMapper):
     st.markdown("## Registros de todas las consignaciones")
 
-    dataset = create_ministries_filter(data=data)
+    dataset, main_filter = create_ministries_filter(data=data)
+    if main_filter == "Obra/Iglesia Hija":
+        dataset = create_churches_filter(data=dataset)
     dataset.unmap()
     registries_data = dataset.data
     st.write(
