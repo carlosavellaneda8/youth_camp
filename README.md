@@ -14,7 +14,7 @@ After that, a new virtual environment will be created containing the dependencie
 
 ```sh
 poetry shell
-streamlit run src/app/app.py
+streamlit run src/app/streamlit_app.py
 ```
 
 And that's it! A new browser session will be opened with the app running.
