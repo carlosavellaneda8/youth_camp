@@ -1,3 +1,5 @@
 .streamlit/secrets.toml
 __pycache__
 .idea
+payment_vouchers
+*.parquet
