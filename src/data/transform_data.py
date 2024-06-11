@@ -15,6 +15,13 @@ def create_person_summary(data: DataMapper) -> pd.DataFrame:
         .data[person_cols]
         .drop_duplicates(subset=["tipo_de_documento", "numero_de_documento"])
     )
+    church_data = (
+        data
+        .data[["tipo_de_documento", "numero_de_documento", "detalle_obra"]]
+        .sort_values(by=["tipo_de_documento", "numero_de_documento", "detalle_obra"])
+        .groupby(["tipo_de_documento", "numero_de_documento"])
+        .head(1)
+    )
     payment_summary = (
         data
         .data
@@ -25,6 +32,7 @@ def create_person_summary(data: DataMapper) -> pd.DataFrame:
     person_summary = (
         person_data.merge(payment_summary)
         .sort_values(by="valor_abono", ascending=False)
+        .merge(church_data)
         .reset_index(drop=True)
     )
     rename_columns = {key: value for key, value in data.reversed_map.items() if key in person_summary.columns}
