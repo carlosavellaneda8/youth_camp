@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np
 from data.etl import DataMapper
 from data.transform_data import filter_data
 
@@ -31,7 +32,7 @@ def check_password():
 
 def create_ministries_filter(data: DataMapper) -> tuple[DataMapper, str]:
     """Filter the data by ministries"""
-    ministries = ["Todos"] + data.data["Ministerio/Obra"].drop_duplicates().tolist()
+    ministries = ["Todos"] + data.data["Ministerio/Obra"].drop_duplicates().dropna().tolist()
 
     with st.sidebar:
         main_filter = st.selectbox("Filtrar por:", ministries)
