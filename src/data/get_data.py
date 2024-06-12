@@ -3,6 +3,8 @@ import pandas as pd
 from st_files_connection import FilesConnection
 from data.etl import AirtableDataExtractor, DataMapper
 
+THRESHOLD_DATE = "2024-04-15"
+
 
 def get_data(base_id: str, table_name: str) -> DataMapper:
     """General function to get the data"""
@@ -16,6 +18,7 @@ def get_gcs_data(file_path: str) -> DataMapper:
     """Retrieve data stored in GCS"""
     conn = st.connection("gcs", type=FilesConnection)
     data = conn.read(file_path, input_format="parquet")
+    data = data[data["Created"] < THRESHOLD_DATE]
     return DataMapper(data=data)
 
 
