@@ -1,6 +1,7 @@
 import webbrowser
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 from data.get_data import get_registries
 
 ID_TYPES = [
@@ -10,10 +11,12 @@ ID_TYPES = [
     "Cédula de Extranjería",
 ]
 REGISTER_URL = "https://airtable.com/appfWLdJbvKBGUtOi/pagtpbNW7quXqROkI/form"
-WAITING_LIST = "https://airtable.com/app9s8t2zfpa5oCqn/shrWIR9vIBfeWDveW"
+WAITING_LIST_URL = "https://airtable.com/app9s8t2zfpa5oCqn/shrWIR9vIBfeWDveW"
+REGISTERED = f"""### ¡Estás inscrito!
+Hemos confirmado que ya estás inscrito a nuestro retiro. Te animamos a llenar [el formulario]({REGISTER_URL}) para registrar un nuevo abono."""
 UNREGISTERED = f"""### ¡Lo sentimos!
 No apareces dentro del listado de inscritos al retiro.
-Te animamos a orar e inscribirte a nuestra [lista de espera]({WAITING_LIST})"""
+Te animamos a orar e inscribirte a nuestra [lista de espera]({WAITING_LIST_URL})"""
 
 
 def is_id_in_data(data: pd.DataFrame, id: int, id_type: str) -> bool:
@@ -49,6 +52,6 @@ id = st.number_input(
 if id:
     id_found = is_id_in_data(data=suscribers, id=id, id_type=id_type)
     if id_found:
-        webbrowser.open(url=REGISTER_URL, new = 0)
+        st.markdown(REGISTERED)
     else:
         st.markdown(UNREGISTERED)
