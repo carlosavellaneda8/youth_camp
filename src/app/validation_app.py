@@ -1,7 +1,5 @@
-import webbrowser
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 from data.get_data import get_registries
 
 ID_TYPES = [
@@ -15,8 +13,11 @@ WAITING_LIST_URL = "https://airtable.com/app9s8t2zfpa5oCqn/shrWIR9vIBfeWDveW"
 REGISTERED = f"""### ¡Estás inscrito!
 Hemos confirmado que ya estás inscrito a nuestro retiro. Te animamos a llenar [el formulario]({REGISTER_URL}) para registrar un nuevo abono."""
 UNREGISTERED = f"""### ¡Lo sentimos!
-No apareces dentro del listado de inscritos al retiro.
-Te animamos a orar e inscribirte a nuestra [lista de espera]({WAITING_LIST_URL})"""
+No apareces dentro del listado de inscritos al retiro. 
+Te animamos a orar e inscribirte a nuestra [lista de espera]({WAITING_LIST_URL}).
+
+**Nota:** Si encuentras una inconsistencia con esto, puedes contactarte con José Mejía ([3022485108](https://wa.me/573022485108)), Carlos Avellaneda ([3203471465](https://wa.me/573203471465)) o Juan Sebastián Piña ([3204668582](https://wa.me/573204668582)).
+"""
 
 
 def is_id_in_data(data: pd.DataFrame, id: int, id_type: str) -> bool:
