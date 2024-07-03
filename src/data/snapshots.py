@@ -7,7 +7,7 @@ from data.etl import DataMapper
 from data.get_data import get_data
 
 
-def _build_client() -> storage.Client:
+def build_client() -> storage.Client:
     """Build the GCS client needed to interact with storage"""
     cred_info = st.secrets.connections.gcs.to_dict()
     creds = service_account.Credentials.from_service_account_info(cred_info)
@@ -108,7 +108,7 @@ def store_record(record: dict, client: storage.Client, bucket: str, path: str) -
 
 
 def main():
-    client = _build_client()
+    client = build_client()
     data = get_records().data
 
     final_data = []
