@@ -3,7 +3,7 @@ import pandas as pd
 from st_files_connection import FilesConnection
 from data.etl import AirtableDataExtractor, DataMapper
 
-THRESHOLD_DATE = "2024-04-15"
+THRESHOLD_DATE = "2024-06-03"
 
 
 def get_data(base_id: str, table_name: str) -> DataMapper:
@@ -28,7 +28,7 @@ def get_registries() -> DataMapper:
         base_id=st.secrets.airtable.base_id,
         table_name=st.secrets.airtable.inscriptions_table,
     )
-    gcs_data = get_gcs_data(file_path="youth_camp_registries/raw_data_snapshot.parquet")
+    gcs_data = get_gcs_data(file_path="youth_camp_registries/new_backup_raw_data_snapshot.parquet")
     data = pd.concat([airtable_data.data, gcs_data.data])
     data = data.drop_duplicates(subset=["Tipo de Documento", "Número de Documento", "Created"])
     return DataMapper(data=data)
