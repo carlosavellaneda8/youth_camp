@@ -57,6 +57,7 @@ def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> pd
         The updated data
     """
     # Delete the ids from the dataset
+    # TODO: add the logic of money transfer to other people
     ids_to_delete = get_ids_to_delete(data=updates_data)
     final_data = delete_records(data=registries_data, ids=ids_to_delete)
 
