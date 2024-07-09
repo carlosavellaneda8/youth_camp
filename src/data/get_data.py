@@ -23,7 +23,7 @@ def get_gcs_data(file_path: str) -> DataMapper:
     return DataMapper(data=data)
 
 
-def get_updates_data() -> DataMapper:
+def get_updates_data() -> pd.DataFrame:
     """Get the data of updates"""
     updates_data = get_data(
         base_id=st.secrets.airtable.base_id,
@@ -32,7 +32,7 @@ def get_updates_data() -> DataMapper:
     col_name = "Eliminado de Streamlit"
     mask = (updates_data[col_name].isna()) | (updates_data[col_name] == False)
     subset_data = updates_data[mask]
-    return DataMapper(data=subset_data)
+    return subset_data
 
 
 @st.cache_data(ttl=15 * 60)
@@ -44,7 +44,7 @@ def get_registries() -> DataMapper:
     gcs_data = get_gcs_data(file_path="youth_camp_registries/new_backup_raw_data_snapshot.parquet")
     data = pd.concat([airtable_data.data, gcs_data.data])
     data = data.drop_duplicates(subset=["Tipo de Documento", "Número de Documento", "Created"])
-    data_to_change = get_updates_data().data
+    data_to_change = get_updates_data()
     data = update_data(registries_data=data, updates_data=data_to_change)
     return DataMapper(data=data)
 
