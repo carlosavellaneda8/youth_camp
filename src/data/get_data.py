@@ -29,10 +29,7 @@ def get_updates_data() -> pd.DataFrame:
         base_id=st.secrets.airtable.base_id,
         table_name=st.secrets.airtable.updates_table,
     ).data
-    col_name = "Eliminado de Streamlit"
-    mask = (updates_data[col_name].isna()) | (updates_data[col_name] == False)
-    subset_data = updates_data[mask]
-    return subset_data
+    return updates_data
 
 
 @st.cache_data(ttl=15 * 60)
