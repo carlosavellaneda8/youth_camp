@@ -1,5 +1,23 @@
 import pandas as pd
 
+COLUMNS_TO_OVERRIDE = [
+    "Número de Documento",
+    "Tipo de Documento",
+    "Nombres",
+    "Apellidos",
+    "Celular",
+    "Correo",
+    "Fecha de Nacimiento",
+    "Ministerio/Obra",
+    "Detalle Obra",
+    "Invitado por",
+]
+IDS_TO_OVERRIDE = {
+    1022997110: 1032482046,
+    1095308711: 1146335157,
+    1098723115: 1146335157,
+}
+
 
 def get_ids_to_delete(data: pd.DataFrame) -> list[int]:
     """
@@ -40,6 +58,76 @@ def delete_records(data: pd.DataFrame, ids: list[int]) -> pd.DataFrame:
     return data[~mask]
 
 
+def get_person_info(data: pd.DataFrame, id: int) -> pd.DataFrame:
+    """
+    Get the info of a person based on the id number
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The registries dataframe
+    id: int
+        The id number of the person
+
+    Returns
+    -------
+    pd.DataFrame
+        The filtered dataframe with the person's information
+    """
+    subset_data = data.loc[data["Número de Documento"] == id, COLUMNS_TO_OVERRIDE]
+    assert subset_data.shape[0] > 0, "The id number is not found on the dataframe"
+    return subset_data.head(1).reset_index(drop=True)
+
+
+def get_registry_info(data: pd.DataFrame, id: int) -> pd.DataFrame:
+    """
+    Get the registries of a person based on the id number
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The registries dataframe
+    id: int
+        The id number of the person
+
+    Returns
+    -------
+    pd.DataFrame
+        The filtered dataframe with the person's registries information
+    """
+    registry_cols = [col for col in data.columns if col not in COLUMNS_TO_OVERRIDE]
+    registry_cols = ["Número de Documento"] + registry_cols
+    registry_info = data.loc[data["Número de Documento"] == id, registry_cols]
+    return registry_info
+
+
+def move_registry_to_other(data: pd.DataFrame, old_id: int, new_id: int) -> pd.DataFrame:
+    """
+    Move the registry to another person
+
+    Parameters
+    data: pd.DataFrame
+        The registries data
+    old_id: int
+        The person that initially did the registry
+    new_id: int
+        The person that will be the new receiver of the registry
+
+    Returns
+    -------
+    pd.DataFrame
+        The data with the updated registry
+    """
+    person_info = get_person_info(data=data, id=new_id)
+    registry_info = get_registry_info(data=data, id=old_id)
+    registry_info["Número de Documento"] = new_id
+    new_data = person_info.merge(registry_info, on=["Número de Documento"])
+    return pd.concat([
+        data.loc[data["Número de Documento"] != old_id],
+        new_data,
+    ]).reset_index(drop=True)
+
+
 def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> pd.DataFrame:
     """
     Execute the different updates in the registries data
@@ -57,8 +145,11 @@ def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> pd
         The updated data
     """
     # Delete the ids from the dataset
-    # TODO: add the logic of money transfer to other people
     ids_to_delete = get_ids_to_delete(data=updates_data)
     final_data = delete_records(data=registries_data, ids=ids_to_delete)
+
+    # Move registries to other persons
+    for old_id, new_id in IDS_TO_OVERRIDE.items():
+        final_data = move_registry_to_other(data=final_data, old_id=old_id, new_id=new_id)
 
     return final_data
