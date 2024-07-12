@@ -19,9 +19,9 @@ IDS_TO_OVERRIDE = {
 }
 
 
-def get_ids_to_delete(data: pd.DataFrame) -> list[int]:
+def get_ids_from_type(data: pd.DataFrame, type_list: list[str]) -> list[int]:
     """
-    Get the list of ids to delete
+    Get the list of ids that match a list of refund type
 
     Parameters
     ----------
@@ -31,9 +31,9 @@ def get_ids_to_delete(data: pd.DataFrame) -> list[int]:
     Returns
     -------
     list[int]
-        The list of ids to delete
+        The list of ids that match
     """
-    mask = data["Tipo de devolución"].isin(["Consignación", "Retiro de niños"])
+    mask = data["Tipo de devolución"].isin(type_list)
     ids_to_delete = data.loc[mask, "Número de Documento"].drop_duplicates()
     return ids_to_delete.tolist()
 
@@ -56,6 +56,29 @@ def delete_records(data: pd.DataFrame, ids: list[int]) -> pd.DataFrame:
     """
     mask = data["Número de Documento"].isin(ids)
     return data[~mask]
+
+
+def get_no_refund_info(data: pd.DataFrame, ids: list[int]) -> tuple[pd.DataFrame, float | int]:
+    """
+    Get the data excluding people that cancelled and did not receive a refund, and retrieve the total amount of them
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        The final dataset
+    ids: list[int]
+        The list of ids that cancelled and got no refund
+
+    Returns
+    -------
+    data: pd.DataFrame
+        The dataset excluding those ids
+    total_amount: float | int
+        The total amount of money that won't be refunded
+    """
+    mask = data["Número de Documento"].isin(ids)
+    total_amount = data.loc[mask, "Valor Abono"].sum()
+    return data[~mask], total_amount
 
 
 def get_person_info(data: pd.DataFrame, id: int) -> pd.DataFrame:
@@ -128,7 +151,7 @@ def move_registry_to_other(data: pd.DataFrame, old_id: int, new_id: int) -> pd.D
     ]).reset_index(drop=True)
 
 
-def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> pd.DataFrame:
+def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> tuple[pd.DataFrame, float | int]:
     """
     Execute the different updates in the registries data
 
@@ -145,11 +168,15 @@ def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> pd
         The updated data
     """
     # Delete the ids from the dataset
-    ids_to_delete = get_ids_to_delete(data=updates_data)
+    ids_to_delete = get_ids_from_type(data=updates_data, type_list=["Consignación", "Retiro de niños"])
     final_data = delete_records(data=registries_data, ids=ids_to_delete)
+
+    # No refund data
+    ids_no_refund = get_ids_from_type(data=updates_data, type_list=["No Aplica Devolución"])
+    final_data, no_refund_amount = get_no_refund_info(data=final_data, ids=ids_no_refund)
 
     # Move registries to other persons
     for old_id, new_id in IDS_TO_OVERRIDE.items():
         final_data = move_registry_to_other(data=final_data, old_id=old_id, new_id=new_id)
 
-    return final_data
+    return final_data, no_refund_amount

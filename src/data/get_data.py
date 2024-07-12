@@ -33,7 +33,7 @@ def get_updates_data() -> pd.DataFrame:
 
 
 @st.cache_data(ttl=15 * 60)
-def get_registries() -> DataMapper:
+def get_registries() -> tuple[DataMapper, float | int]:
     airtable_data = get_data(
         base_id=st.secrets.airtable.base_id,
         table_name=st.secrets.airtable.inscriptions_table,
@@ -42,8 +42,8 @@ def get_registries() -> DataMapper:
     data = pd.concat([airtable_data.data, gcs_data.data])
     data = data.drop_duplicates(subset=["Tipo de Documento", "Número de Documento", "Created"])
     data_to_change = get_updates_data()
-    data = update_data(registries_data=data, updates_data=data_to_change)
-    return DataMapper(data=data)
+    data, no_refund_amount = update_data(registries_data=data, updates_data=data_to_change)
+    return DataMapper(data=data), no_refund_amount
 
 
 @st.cache_data(ttl=15 * 60)
