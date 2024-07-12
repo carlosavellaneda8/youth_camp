@@ -15,7 +15,7 @@ Selecciona en el menú de la izquierda la opción que desees.
     st.markdown(md_text)
 
 
-def attendants(data: DataMapper):
+def attendants(data: DataMapper, no_refund_amount: float | int):
     st.markdown("## Inscritos")
 
     dataset, main_filter = create_ministries_filter(data=data)
@@ -24,12 +24,19 @@ def attendants(data: DataMapper):
     summary_data = create_person_summary(data=dataset)
     st.write(summary_data)
 
+    total_registries = summary_data["Valor Abono"].sum()
+    total_amount = no_refund_amount + total_registries
+
     st.markdown(f"""
     ### Resumen:
 
     **Cantidad de inscritos:** {summary_data.shape[0]}
 
-    **Valor recaudado:** ${summary_data["Valor Abono"].sum():,.0f}
+    **Valor recaudado de los inscritos:** ${total_registries:,.0f}
+
+    **Valor recaudado de cancelaciones sin devolución:** ${no_refund_amount:,.0f}
+
+    **Valor recaudado de cancelaciones sin devolución:** ${total_amount:,.0f}
     """)
 
 

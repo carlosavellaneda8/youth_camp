@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # Download the data
-registries_data = get_registries()
+registries_data, no_refund_amount = get_registries()
 
 # Define the names, functions and arguments
 page_names_to_funcs = {
@@ -31,7 +31,7 @@ page_names_to_funcs = {
 }
 page_names_to_args = {
     "Inicio": None,
-    "Inscritos": {"data": registries_data},
+    "Inscritos": {"data": registries_data, "no_refund_amount": no_refund_amount},
     "Reporte semanal": {"data": registries_data},
     "Consignaciones": {"data": registries_data},
     "Desembolsos": {"data": registries_data},
