@@ -45,9 +45,10 @@ st.title(":earth_americas: Retiro Internacional TBUCF-2024")
 id_type = st.selectbox(
     label="Ingresa el tipo de documento", options=ID_TYPES, index=None, placeholder="Escoge una opción"
 )
-id = st.number_input(
-    label="Ingresa el número de documento", step=1, format="%i", value=None
-)
+if id_type:
+    id = st.number_input(
+        label="Ingresa el número de documento", step=1, format="%i", value=None
+    )
 
 
 if id:
