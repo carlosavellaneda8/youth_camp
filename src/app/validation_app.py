@@ -50,10 +50,9 @@ if id_type:
         label="Ingresa el número de documento", step=1, format="%i", value=None
     )
 
-
-if id:
-    id_found = is_id_in_data(data=suscribers, id=id, id_type=id_type)
-    if id_found:
-        st.markdown(REGISTERED)
-    else:
-        st.markdown(UNREGISTERED)
+    if id:
+        id_found = is_id_in_data(data=suscribers, id=id, id_type=id_type)
+        if id_found:
+            st.markdown(REGISTERED)
+        else:
+            st.markdown(UNREGISTERED)
