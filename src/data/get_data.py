@@ -4,7 +4,7 @@ from st_files_connection import FilesConnection
 from data.etl import AirtableDataExtractor, DataMapper
 from data.updates import update_data
 
-THRESHOLD_DATE = "2024-06-03"
+THRESHOLD_DATE = "2024-07-08"
 
 
 def get_data(base_id: str, table_name: str) -> DataMapper:
@@ -38,7 +38,7 @@ def get_registries() -> tuple[DataMapper, float | int]:
         base_id=st.secrets.airtable.base_id,
         table_name=st.secrets.airtable.inscriptions_table,
     )
-    gcs_data = get_gcs_data(file_path="youth_camp_registries/new_backup_raw_data_snapshot.parquet")
+    gcs_data = get_gcs_data(file_path="youth_camp_registries/last_new_backup_raw_data_snapshot.parquet")
     data = pd.concat([airtable_data.data, gcs_data.data])
     data = data.drop_duplicates(subset=["Tipo de Documento", "Número de Documento", "Created"])
     data_to_change = get_updates_data()
