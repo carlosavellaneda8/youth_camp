@@ -36,7 +36,7 @@ st.set_page_config(
     layout="wide",
 )
 
-registries_data = get_registries()
+registries_data, _ = get_registries()
 registries_data.map()
 suscribers = registries_data.data[["tipo_de_documento", "numero_de_documento"]].drop_duplicates()
 suscribers["tipo_de_documento"] = suscribers["tipo_de_documento"].str.upper()
