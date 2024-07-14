@@ -185,4 +185,5 @@ def update_data(registries_data: pd.DataFrame, updates_data: pd.DataFrame) -> tu
     for old_id, new_id in IDS_TO_OVERRIDE.items():
         final_data = move_registry_to_other(data=final_data, old_id=old_id, new_id=new_id)
 
+    final_data.loc[final_data["Número de Documento"] == 1025145567, "Valor Abono"] = 0
     return final_data, no_refund_amount
