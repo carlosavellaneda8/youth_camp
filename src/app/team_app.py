@@ -1,40 +1,6 @@
 import streamlit as st
 from data.etl import AirtableDataExtractor
-
-GREETING = """
-¡Hola, {name}! Bienvenido a nuestro retiro IronRunner: No dejes de correr.
-
-Durante el retiro, harás parte del equipo {team}, y tendrás a tu disposición las siguientes personas que estarán dispuestos a ayudarte en lo que sea que necesites:
-
-- {male_captain}
-- {female_captain}
-
-Cuando llegues a TierraAlta, busca el logo de tu equipo en el hangar. ¡Que Dios use grandemente este retiro en tu vida!
-"""
-
-
-class Person:
-    def __init__(
-        self, id: int, name: str, team: str, male_captain: str, female_captain: str, alias: str
-    ) -> None:
-        self.id = id
-        self.name = name
-        self.team = team
-        self.male_captain = male_captain
-        self.female_captain = female_captain
-        self.alias = alias
-
-    def __str__(self):
-        return GREETING.format(
-            name=self.name,
-            team=self.team,
-            male_captain=self.male_captain,
-            female_captain=self.female_captain,
-        )
-
-def is_registered(id: int, registered_ids: set[int]) -> bool:
-    """Check if the id entered by the user is registered or not"""
-    return id in registered_ids
+from app.team_utils import Person
 
 
 @st.cache_data
@@ -105,18 +71,45 @@ def get_teams_metadata() -> list[dict]:
     return records
 
 
+def check_id_number() -> bool:
+    def id_entered():
+        if st.session_state["id_number"] in registered_ids:
+            st.session_state["id_correct"] = True
+        else:
+            st.session_state["id_correct"] = False
+
+    def home_view():
+        st.image("src/app/imgs/logo.png")
+        st.number_input(
+            "Ingresa tu número de documento",
+            on_change=id_entered,
+            format="%i",
+            value=None,
+            step=1,
+            key="id_number",
+        )
+
+    if "id_correct" not in st.session_state:
+        home_view()
+        return False
+    elif not st.session_state["id_correct"]:
+        home_view()
+        st.error("Documento incorrecto, intenta nuevamente. Si tienes dudas, contáctate con Sebastián Rubiano ([313 4382109](https://wa.me/573134382109))")
+        return False
+    else:
+        return True
+
+
 team_records = get_teams_data()
 team_metadata = get_teams_metadata()
 registered_ids = get_all_ids(data=team_records)
 teams_dict = create_teams_dict(team_data=team_records, team_metadata=team_metadata)
 
-st.image("src/app/imgs/logo.png")
 
-id = st.number_input(label="Ingresa tu número de documento", value=None, format="%i", step=1)
-if id:
-    if is_registered(id=id, registered_ids=registered_ids):
-        user = Person(**teams_dict[id])
-        st.markdown(user)
+if (check_id_number()) & ("id_number" in st.session_state):
+    id = st.session_state["id_number"]
+    user = Person(**teams_dict[id])
+    st.image("src/app/imgs/logo.png")
+    st.markdown(user)
+    if user.alias != "apoyo":
         st.image(f"src/app/imgs/{user.alias}.png")
-    else:
-        st.markdown("Pailas papi")
