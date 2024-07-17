@@ -18,7 +18,7 @@ class Person:
         self, id: int, name: str, team: str, male_captain: str, female_captain: str, alias: str
     ) -> None:
         self.id = id
-        self.name = name
+        self.name = name.strip().title()
         self.team = team
         self.male_captain = male_captain
         self.female_captain = female_captain
